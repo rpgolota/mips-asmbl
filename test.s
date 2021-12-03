@@ -1,3 +1,6 @@
+.data
+d1: .word 3
+
 .text
 .globl main
 
