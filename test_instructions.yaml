@@ -1,0 +1,155 @@
+# bit widths and locations of named variable fields
+fields:
+  opcode:
+    - [31, 26]
+    - input: false
+  funct:
+    - [5, 0]
+    - input: false
+  rs:
+    - [25, 21]
+    - input: register
+  rt:
+    - [20, 16]
+    - input: register
+  rd:
+    - [15, 11]
+    - input: register
+  base:
+    - [25, 21]
+    - input: register
+  shamt:
+    - [10, 6]
+    - input: number
+  immediate:
+    - [15, 0]
+    - input: number
+  offset:
+    - [15, 0]
+    - input: [number, label]
+  index:
+    - [25, 0]
+    - input: [number, label]
+
+# special rules for capturing non-normal syntax
+special_parsers:
+  regoffset:
+    re: (-?[0-9]+)\((\$.*?)\)
+    output: [number, register]
+  regoffset2:
+    re: (-?[0-9]+)\[(\$.*?)\]
+    output: [number, register]
+
+# instruction input format
+instruction_input:
+  add:    [rd, rs, rt]
+  addi:   [rt, rs, immediate]
+  addiu:  [rt, rs, immediate]
+  addu:   [rd, rs, rt]
+  sub:    [rd, rs, rt]
+  mul:    [rd, rs, rt]
+  lw:     [rt, regoffset: [offset, base]]
+  sw:     [rt, regoffset: [offset, base]]
+  lui:    [rt, immediate]
+  bltz:   [rs, offset]
+  bgez:   [rs, offset]
+  blez:   [rs, offset]
+  bgtz:   [rs, offset]
+  beq:    [rs, rt, offset]
+  bne:    [rs, rt, offset]
+  j:      [index]
+  jal:    [index]
+  jr:     [rs]
+  and:    [rd, rs, rt]
+  andi:   [rt, rs, immediate]
+  or:     [rd, rs, rt]
+  ori:    [rt, rs, immediate]
+  nor:    [rd, rs, rt]
+  xor:    [rd, rs, rt]
+  xori:   [rt, rs, immediate]
+  sll:    [rd, rt, shamt]
+  sllv:   [rd, rt, rs]
+  srl:    [rd, rt, shamt]
+  srlv:   [rd, rt, rs]
+  rotr:   [rd, rt, shamt]
+  rotrv:  [rd, rt, rs]
+  sra:    [rd, rt, shamt]
+  srav:   [rd, rt, rs]
+  seh:    [rd, rt]
+  seb:    [rd, rt]
+  slt:    [rd, rs, rt]
+  slti:   [rt, rs, immediate]
+  sltu:   [rd, rs, rt]
+  sltiu:  [rt, rs, immediate]
+  movn:   [rd, rs, rt]
+  movz:   [rd, rs, rt]
+  nop:    []
+
+  srbr0:  []
+  lw2:     [rt, regoffset2: [offset, base]]
+
+# instruction output format
+instruction_output:
+  add:    [b000000, rs, rt, rd, b00000, b100000]
+  addi:   [b001000, rs, rt, immediate]
+  addiu:  [b001001, rs, rt, immediate]
+  addu:   [b000000, rs, rt, rd, b00000, b100001]
+  sub:    [b000000, rs, rt, rd, b00000, b100010]
+  mul:    [b011100, rs, rt, rd, b00000, b000010]
+  lw:     [b100011, base, rt, offset]
+  sw:     [b101011, base, rt, offset]
+  lui:    [b001111, b00000, rt, immediate]
+  bltz:   [b000001, rs, b00000, offset]
+  bgez:   [b000001, rs, b00001, offset]
+  blez:   [b000110, rs, b00000, offset]
+  bgtz:   [b000111, rs, b00000, offset]
+  beq:    [b000100, rs, rt, offset]
+  bne:    [b000101, rs, rt, offset]
+  j:      [b000010, index]
+  jal:    [b000011, index]
+  jr:     [b000000, rs, b00000, b00000, b00000, b001000]
+  and:    [b000000, rs, rt, rd, b00000, b100100]
+  andi:   [b001100, rs, rt, immediate]
+  or:     [b000000, rs, rt, rd, b00000, b100101]
+  ori:    [b001101, rs, rt, immediate]
+  nor:    [b000000, rs, rt, rd, b00000, b100111]
+  xor:    [b000000, rs, rt, rd, b00000, b100110]
+  xori:   [b001110, rs, rt, immediate]
+  sll:    [b000000, b00000, rt, rd, shamt, b000000]
+  sllv:   [b000000, rs, rt, rd, shamt, b000100]
+  srl:    [b000000, b00000, rt, rd, shamt, b000010]
+  srlv:   [b000000, rs, rt, rd, b00000, b000110]
+  rotr:   [b000000, b00001, rt, rd, shamt, b000010]
+  rotrv:  [b000000, rs, rt, rd, b00001, b000110]
+  sra:    [b000000, b00000, rt, rd, shamt, b000011]
+  srav:   [b000000, rs, rt, rd, b00000, b000111]
+  seh:    [b011111, b00000, rt, rd, b11000, b100000]
+  seb:    [b011111, rs, rt, rd, b10000, b100000]
+  slt:    [b000000, rs, rt, rd, b00000, b101010]
+  slti:   [b001010, rs, rt, immediate]
+  sltu:   [b000000, rs, rt, rd, b00000, b101011]
+  sltiu:  [b001011, rs, rt, immediate]
+  movn:   [b000000, rs, rt, rd, b00000, b001011]
+  movz:   [b000000, rs, rt, rd, b00000, b001010]
+  nop:    [b000000, b00000, b00000, b00000, b00000, b000000]
+
+  srbr0:  [b110000, b00000, b00000, b00000, b00000, b000000]
+  lw2:    [b100111, base, rt, offset]
+
+pseudoinstruction_input:
+  la: [one: register, two: label]
+  li: [one: register, two: number]
+  move: [one: register, two: register]
+  abs: [one: register, two: register]
+
+pseudoinstruction_output:
+  la:
+    - ori %one%, $zero, %two%
+  li:
+    - ori %one%, $zero, %two%
+  move:
+    - add %one%, %two%, $zero
+  abs:
+    - sra $at, %two%, 31
+    - xor %one%, %two%, $at
+    - sub %one%, %one%, $at

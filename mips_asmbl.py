@@ -417,7 +417,20 @@ def parse_file(format, mips_lines, verbose):
     instr = splice_words(instr)
     
     return (data, instr), (datalabels, instrlabels)
-            
+
+def preprocess(mips):
+    spl = mips.split("%")
+    if len(spl) == 1:
+        return mips
+    res = []
+    for s in spl:
+        try:
+            res.append(str(eval(s)))
+        except:
+            res.append(s)
+        
+    return "".join(res)
+
 def assemble(args):
     
     to_assemble = args.input
@@ -434,7 +447,11 @@ def assemble(args):
         print(f"[LOG] Opening assembly file {args.input} for reading.")
     
     with open(to_assemble, "r") as f:
-        mips = f.read().strip().split("\n")
+        mips = f.read().strip()
+        if args.verbose:
+            print(f"[LOG] Preprocessing {args.input}.")
+        mips = preprocess(mips)
+        mips = mips.split("\n")
         
     if args.verbose:
         print(f"[LOG] Starting to parse mips.")
@@ -447,14 +464,20 @@ def assemble(args):
     
     with open(args.data, "w") as f:
         for d in data:
-            f.write(f"{int(d, 2):08x}\n")
+            if args.binary:
+                f.write(f"{int(d, 2):032b}\n")
+            else:
+                f.write(f"{int(d, 2):08x}\n")
     
     if args.verbose:
         print(f"[LOG] Writing instruction file {args.instruction}.")
     
     with open(args.instruction, "w") as f:
         for i in instr:
-            f.write(f"{int(i, 2):08x}\n")
+            if args.binary:
+                f.write(f"{int(i, 2):032b}\n")
+            else:
+                f.write(f"{int(i, 2):08x}\n")
             
     if args.verbose:
         print(f"[LOG] Done writing. Showing the collected data and instruction label data.")
@@ -471,13 +494,14 @@ def get_args():
     parser.add_argument("input")
     parser.add_argument("-d", "--data", nargs=1, required=True, help="data file output")
     parser.add_argument("-i", "--instruction", nargs=1, required=True, help="instruction file output")
-    parser.add_argument("-c", "--config", nargs=1, default="instructions.yaml", help="choose a different language configuration file")
+    parser.add_argument("-c", "--config", nargs=1, default=["instructions.yaml"], help="choose a different language configuration file")
     parser.add_argument("-b", "--binary", action="store_true", help="output binary instead of hex")
     parser.add_argument("-v", "--verbose", action="store_true", help="enable verbose output")
     
     args = parser.parse_args()
     args.instruction = args.instruction[0]
     args.data = args.data[0]
+    args.config = args.config[0]
     
     return args    
 
