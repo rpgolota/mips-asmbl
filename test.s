@@ -12,4 +12,4 @@ l3:    test
 l4:    addi $t0, $zero, 1
 l5:    inc $t0
 l6:    abs $t0, $t0 # takes 3 slots
-l9:    inci $t0, 4
+l9:    inci $t0, %9 * 2%
