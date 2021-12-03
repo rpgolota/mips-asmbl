@@ -3,6 +3,7 @@ from pprint import pprint
 import re
 from bitstring import Bits
 import argparse
+import pkg_resources
 
 def convert_register(regstr):
     
@@ -494,7 +495,7 @@ def get_args():
     parser.add_argument("input")
     parser.add_argument("-d", "--data", nargs=1, required=True, help="data file output")
     parser.add_argument("-i", "--instruction", nargs=1, required=True, help="instruction file output")
-    parser.add_argument("-c", "--config", nargs=1, default=["instructions.yaml"], help="choose a different language configuration file")
+    parser.add_argument("-c", "--config", nargs=1, default=[pkg_resources.resource_filename(__name__, "default.yaml")], help="choose a different language configuration file")
     parser.add_argument("-b", "--binary", action="store_true", help="output binary instead of hex")
     parser.add_argument("-v", "--verbose", action="store_true", help="enable verbose output")
     
