@@ -312,7 +312,7 @@ def process_instructions(instructions, datalabels, instrformat, verbose):
         elif line[0] in instrformat["pseudoinstruction_input"]:
             
             if verbose:
-                    print(f"       - Found pseudo-instruction {line[1]}")
+                    print(f"       - Found pseudo-instruction {line[0]}")
             
             o, i = parse_pseudoinstruction(instrformat, line, datalabels)
             output += o

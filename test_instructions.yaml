@@ -141,6 +141,7 @@ pseudoinstruction_input:
   li: [one: register, two: number]
   move: [one: register, two: register]
   abs: [one: register, two: register]
+  test: []
 
 pseudoinstruction_output:
   la:
@@ -153,3 +154,5 @@ pseudoinstruction_output:
     - sra $at, %two%, 31
     - xor %one%, %two%, $at
     - sub %one%, %one%, $at
+  test:
+    - addi $t0, $zero, 1
