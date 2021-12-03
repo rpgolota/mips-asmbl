@@ -5,11 +5,11 @@ d1: .word 3
 .globl main
 
 main:
-0:    addi $t0, $zero, 1
-1:    srbr0
-2:    lw2 $t0, 5[$t4]
-3:    test
-4:    addi $t0, $zero, 1
-5:    inc $t0
-6:    abs $t0, $t0 # takes 3 slots
-9:    inci $t0, 4
+l0:    addi $t0, $zero, 1
+l1:    srbr0
+l2:    lw2 $t0, 5[$t4]
+l3:    test
+l4:    addi $t0, $zero, 1
+l5:    inc $t0
+l6:    abs $t0, $t0 # takes 3 slots
+l9:    inci $t0, 4
